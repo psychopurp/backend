@@ -116,8 +116,8 @@ impl TestHarness {
             }
         }
 
-        let mut stream = self.sub.on_message();
-        while let Some(item) = stream.next().await {
+        // let mut stream = self.sub.on_message();
+        while let Some(item) = self.sub.next().await {
             let payload: EventV1 = redis_kiss::decode_payload(&item.unwrap()).unwrap();
 
             if predicate(&payload) {

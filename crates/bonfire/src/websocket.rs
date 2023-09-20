@@ -136,20 +136,27 @@ pub fn spawn_client(db: &'static Database, stream: TcpStream, addr: SocketAddr) 
                                             );*/
 
                                             // Handle incoming events.
-                                            let data = conn
-                                                .on_message()
-                                                .next()
-                                                .await
-                                                .map(|res| {
-                                                    info!("Msg: {res:?}");
-                                                    res.map(|item| {
-                                                        info!("item: {item:?}");
-                                                        (
-                                                            item.get_channel_name().to_string(),
-                                                            redis_kiss::decode_payload::<EventV1>(&item),
-                                                        )
-                                                    })
-                                                });
+                                            // let data = conn
+                                            //     .on_message()
+                                            //     .next()
+                                            //     .await
+                                            //     .map(|res| {
+                                            //         info!("Msg: {res:?}");
+                                            //         res.map(|item| {
+                                            //             info!("item: {item:?}");
+                                            //             (
+                                            //                 item.get_channel_name().to_string(),
+                                            //                 redis_kiss::decode_payload::<EventV1>(&item),
+                                            //             )
+                                            //         })
+                                            //     });
+
+                                            let data=conn.next().await.map(
+                                                |res|
+                                                res.map(
+                                                    |item|
+                                                    (item.get_channel_name().to_string(),redis_kiss::decode_payload::<EventV1>(&item)
+                                                )));
                                             
                                             match data {
                                                 Some(Ok((channel, item))) => {
